@@ -29,6 +29,6 @@ matrix:
     - language: scala
       scala: 2.11.11
       script:
-        - sbt clean coverage test coverageReport
+        - travis_wait 20 sbt clean coverage test coverageReport
       after_success:
         - bash <(curl -s https://codecov.io/bash)
