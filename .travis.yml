@@ -28,7 +28,7 @@ matrix:
 
     - language: scala
       jdk:
-        - oraclejdk7
+        - oraclejdk9
       before_script:
         - _JAVA_OPTIONS=
       scala: 2.11.11
