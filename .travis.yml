@@ -27,11 +27,10 @@ matrix:
         - python run-tests.py
 
     - language: scala
-      jdk:
-        - oraclejdk9
+      scala: 2.11.11
       before_script:
         - _JAVA_OPTIONS=
-      scala: 2.11.11
+      script:
         - sbt clean coverage test coverageReport
       after_success:
         - bash <(curl -s https://codecov.io/bash)
