@@ -30,7 +30,3 @@ matrix:
       scala: 2.11.11
       before_script:
         - _JAVA_OPTIONS="-Xmx6G -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=6G -Xms2G -Xss64M -XX:+AggressiveOpts"
-      script:
-        - sbt clean coverage test coverageReport
-      after_success:
-        - bash <(curl -s https://codecov.io/bash)
