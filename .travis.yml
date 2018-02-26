@@ -2,8 +2,6 @@ cache:
   directories:
     - $HOME/.spark_nlp.dep.cache
 
-sbt_args: -J-Xmx8G -J-XX:+UseConcMarkSweepGC -J-XX:+CMSClassUnloadingEnabled -J-XX:MaxPermSize=6G -J-Xss2M
-
 matrix:
   include:
     - language: python
@@ -28,3 +26,5 @@ matrix:
 
     - language: scala
       scala: 2.11.11
+      before_script:
+        - export _JAVA_OPTIONS="-Xmx8G -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -Xss2M -Xms1024M"
