@@ -27,4 +27,4 @@ matrix:
     - language: scala
       scala: 2.11.11
       before_script:
-        - export _JAVA_OPTIONS="-Xmx8G -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -Xss2M -Xms1024M"
+        - export _JAVA_OPTIONS="-Xmx4G -XX:+UseConcMarkSweepGC -Xss2M -Xms1024M"
