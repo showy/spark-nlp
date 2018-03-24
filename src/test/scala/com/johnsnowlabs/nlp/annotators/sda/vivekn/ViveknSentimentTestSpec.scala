@@ -5,6 +5,7 @@ import com.johnsnowlabs.nlp.annotators.sbd.pragmatic.SentenceDetector
 import com.johnsnowlabs.nlp.annotators.{Normalizer, Tokenizer}
 import com.johnsnowlabs.nlp.annotators.spell.norvig.NorvigSweetingApproach
 import com.johnsnowlabs.nlp.util.io.{ExternalResource, ReadAs}
+import com.johnsnowlabs.util.Benchmark
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.sql.Row
 import org.scalatest._
@@ -57,12 +58,13 @@ class ViveknSentimentTestSpec extends FlatSpec {
     val spellChecker = new NorvigSweetingApproach()
       .setInputCols(Array("normalized"))
       .setOutputCol("spell")
+      .setDictionary("src/test/resources/spell/words.txt")
 
     val sentimentDetector = new ViveknSentimentApproach()
       .setInputCols(Array("spell", "sentence"))
       .setOutputCol("vivekn")
-      .setPositiveSource(ExternalResource("/vivekn/positive/1.txt", ReadAs.LINE_BY_LINE, Map("tokenPattern" -> "\\S+")))
-      .setNegativeSource(ExternalResource("/vivekn/negative/1.txt", ReadAs.LINE_BY_LINE, Map("tokenPattern" -> "\\S+")))
+      .setPositiveSource(ExternalResource("src/test/resources/vivekn/positive/1.txt", ReadAs.LINE_BY_LINE, Map("tokenPattern" -> "\\S+")))
+      .setNegativeSource(ExternalResource("src/test/resources/vivekn/negative/1.txt", ReadAs.LINE_BY_LINE, Map("tokenPattern" -> "\\S+")))
       .setCorpusPrune(0)
 
     val pipeline = new Pipeline()
@@ -76,12 +78,12 @@ class ViveknSentimentTestSpec extends FlatSpec {
       ))
 
     val model = pipeline.fit(data)
-    model.transform(data).show()
+    model.transform(data).show(1)
 
     val PIPE_PATH = "./tmp_pipeline"
     model.write.overwrite().save(PIPE_PATH)
     val loadedPipeline = PipelineModel.read.load(PIPE_PATH)
-    loadedPipeline.transform(data).show
+    loadedPipeline.transform(data).show(1)
 
     succeed
   }

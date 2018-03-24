@@ -2,11 +2,14 @@ import sparknlp.internal as _internal
 from pyspark.ml.param import *
 import re
 
+
 def RegexRule(rule, identifier):
     return _internal._RegexRule(rule, identifier).apply()
 
+
 def ExternalResource(path, read_as, options):
     return _internal._ExternalResource(path, read_as, options).apply()
+
 
 """
 Helper class used to generate the getters for all params

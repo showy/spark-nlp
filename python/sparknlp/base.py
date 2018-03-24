@@ -5,6 +5,7 @@ from pyspark.ml.param.shared import Param, Params, TypeConverters
 from pyspark.ml.pipeline import Pipeline, PipelineModel, Estimator, Transformer
 from sparknlp.common import ParamsGetters
 from sparknlp.util import AnnotatorJavaMLReadable
+import sparknlp.internal as _internal
 
 
 class AnnotatorTransformer(JavaTransformer, AnnotatorJavaMLReadable, JavaMLWritable, ParamsGetters):
@@ -66,6 +67,61 @@ class JavaRecursiveEstimator(JavaEstimator):
                              "but got %s." % type(params))
 
 
+class Annotation:
+    def __init__(self, annotator_type, start, end, result, metadata):
+        self.annotator_type = annotator_type
+        self.start = start
+        self.end = end
+        self.result = result
+        self.metadata = metadata
+
+
+class LightPipeline:
+    def __init__(self, pipelineModel):
+        self._lightPipeline = _internal._LightPipeline(pipelineModel).apply()
+
+    @staticmethod
+    def _annotation_from_java(java_annotations):
+        annotations = []
+        for annotation in java_annotations:
+            annotations.append(Annotation(annotation.annotatorType(),
+                                          annotation.start(),
+                                          annotation.end(),
+                                          annotation.result(),
+                                          dict(annotation.metadata()))
+                               )
+        return annotations
+
+    def fullAnnotate(self, target):
+        result = []
+        for row in self._lightPipeline.fullAnnotateJava(target):
+            kas = {}
+            for atype, annotations in row.items():
+                kas[atype] = self._annotation_from_java(annotations)
+            result.append(kas)
+        return result
+
+    def annotate(self, target):
+        def extract(text_annotations):
+            kas = {}
+            for atype, text in text_annotations.items():
+                kas[atype] = text
+            return kas
+
+        annotations = self._lightPipeline.annotateJava(target)
+
+        if type(target) is str:
+            result = extract(annotations)
+        elif type(target) is list:
+            result = []
+            for row_annotations in annotations:
+                result.append(extract(row_annotations))
+        else:
+            raise TypeError("target for annotation may be 'str' or 'list'")
+
+        return result
+
+
 class RecursivePipeline(Pipeline, JavaEstimator):
     @keyword_only
     def __init__(self, *args, **kwargs):
@@ -112,11 +168,12 @@ class DocumentAssembler(AnnotatorTransformer):
     outputCol = Param(Params._dummy(), "outputCol", "input column name.", typeConverter=TypeConverters.toString)
     idCol = Param(Params._dummy(), "idCol", "input column name.", typeConverter=TypeConverters.toString)
     metadataCol = Param(Params._dummy(), "metadataCol", "input column name.", typeConverter=TypeConverters.toString)
-    reader = 'documentAssembler'
+    name = 'DocumentAssembler'
 
     @keyword_only
     def __init__(self):
         super(DocumentAssembler, self).__init__(classname="com.johnsnowlabs.nlp.DocumentAssembler")
+        self._setDefault(outputCol="document")
 
     @keyword_only
     def setParams(self):
@@ -140,6 +197,7 @@ class TokenAssembler(AnnotatorTransformer):
 
     inputCols = Param(Params._dummy(), "inputCols", "input token annotations", typeConverter=TypeConverters.toListString)
     outputCol = Param(Params._dummy(), "outputCol", "output column name.", typeConverter=TypeConverters.toString)
+    name = "TokenAssembler"
 
     @keyword_only
     def __init__(self):
@@ -166,10 +224,18 @@ class Finisher(AnnotatorTransformer):
     cleanAnnotations = Param(Params._dummy(), "cleanAnnotations", "whether to remove annotation columns", typeConverter=TypeConverters.toBoolean)
     includeKeys = Param(Params._dummy(), "includeKeys", "annotation metadata format", typeConverter=TypeConverters.toBoolean)
     outputAsArray = Param(Params._dummy(), "outputAsArray", "finisher generates an Array with the results instead of string", typeConverter=TypeConverters.toBoolean)
+    name = "Finisher"
 
     @keyword_only
     def __init__(self):
         super(Finisher, self).__init__(classname="com.johnsnowlabs.nlp.Finisher")
+        self._setDefault(
+            valueSplitSymbol="#",
+            annotationSplitSymbol="@",
+            cleanAnnotations=True,
+            includeKeys=False,
+            outputAsArray=False
+        )
 
     @keyword_only
     def setParams(self):
