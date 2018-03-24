@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/showy/spark-nlp.svg?branch=master)](https://travis-ci.org/showy/spark-nlp)
-
+<div align="center">
+  <img src="https://travis-matrix-badges.herokuapp.com/repos/JohnSnowLabs/spark-nlp/branches/master"><br/>
+</div>
 # spark-nlp
 John Snow Labs Spark-NLP is a natural language processing library built on top of Apache Spark ML. It provides simple, performant & accurate NLP annotations for machine learning pipelines, that scale easily in a distributed environment.
 
