@@ -1,15 +1,12 @@
 cache:
   directories:
     - $HOME/.spark_nlp.dep.cache
-
-os: linux
-  addons:
-    apt:
-      sources:
-        - ubuntu-toolchain-r-test
-      packages:
-        - g++-6
- 
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-6
 matrix:
   include:
    - language: python
