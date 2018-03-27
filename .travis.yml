@@ -1,19 +1,17 @@
 cache:
   directories:
     - $HOME/.spark_nlp.dep.cache
-
+os: linux
+  addons:
+    apt:
+      sources:
+        - ubuntu-toolchain-r-test
+      packages:
+        - g++-6
+ 
 matrix:
   include:
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-6
-      env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6" 
-    - language: python
+   - language: python
       python: 2.7
       before_script:
         - sbt assemblyAndCopy
@@ -36,6 +34,6 @@ matrix:
     - language: scala
       scala: 2.11.11
       before_install:
-        - eval "${MATRIX_EVAL}"
+        - eval "CC=gcc-6 && CXX=g++-6"
       before_script:
         - export _JAVA_OPTIONS="-Xmx4G -XX:+UseConcMarkSweepGC -Xss6M -Xms2048M"
