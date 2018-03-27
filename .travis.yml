@@ -4,6 +4,15 @@ cache:
 
 matrix:
   include:
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+      env:
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6" 
     - language: python
       python: 2.7
       before_script:
@@ -27,8 +36,6 @@ matrix:
     - language: scala
       scala: 2.11.11
       before_install:
-        - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-        - sudo apt-get update -q
-        - sudo apt-get install libstdc++6 -y
+        - eval "${MATRIX_EVAL}"
       before_script:
         - export _JAVA_OPTIONS="-Xmx4G -XX:+UseConcMarkSweepGC -Xss6M -Xms2048M"
