@@ -22,7 +22,7 @@ jobs:
       install: skip
       language: python
       python: "2.7"
-      - script:
+      script:
         - docker build --build-arg from="$DOCKER_USERNAME"/spark-nlp-scala -t spark-nlp-python-2 -f .ci/DockerfilePy2 .
         - docker run spark-nlp-python-2 python2 run-tests.py
       language: python
