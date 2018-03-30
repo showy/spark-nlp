@@ -10,13 +10,16 @@ cache:
 jobs:
   include:
     - stage: build
+      install: skip
       script: 
         - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
         - docker build -t "$DOCKER_USERNAME"/spark-nlp-scala -f .ci/Dockerfile .
         - docker push "$DOCKER_USERNAME"/spark-nlp-scala
     - stage: scala
+      install: skip
       script: docker run "$DOCKER_USERNAME"/spark-nlp-scala sbt test 
     - stage: python
+      install: skip
       language: python
       python: "2.7"
       script:
