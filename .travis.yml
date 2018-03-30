@@ -1,3 +1,10 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t spark-nlp-scala -f .ci/Dockerfile .
+
 cache:
   directories:
     - $HOME/.spark_nlp.dep.cache
@@ -28,3 +35,5 @@ matrix:
       scala: 2.11.11
       before_script:
         - export _JAVA_OPTIONS="-Xmx4G -XX:+UseConcMarkSweepGC -Xss6M -Xms2048M"
+      script:
+        - docker run spark-nlp-scala test
