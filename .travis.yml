@@ -1,6 +1,5 @@
 env:
-  global:
-    - DOCKER_SPARK_NLP_SCALA = "$DOCKER_USERNAME"/spark-nlp-scala-"$TRAVIS_BUILD_ID"
+  - DOCKER_SPARK_NLP_SCALA="$DOCKER_USERNAME"/spark-nlp-scala-"$TRAVIS_BUILD_ID"
 
 sudo: required
 
