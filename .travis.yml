@@ -36,4 +36,4 @@ matrix:
       before_script:
         - export _JAVA_OPTIONS="-Xmx4G -XX:+UseConcMarkSweepGC -Xss6M -Xms2048M"
       script:
-        - docker run spark-nlp-scala test
+        - docker run spark-nlp-scala sbt test
