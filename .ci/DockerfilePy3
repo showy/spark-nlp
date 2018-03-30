@@ -1,4 +1,5 @@
-FROM spark-nlp-scala
+ARG from
+FROM $from
 
 RUN sbt assemblyAndCopy
 RUN apt-get -y update
