@@ -1,39 +1,20 @@
 sudo: required
+
 services:
   - docker
-
-before_install:
-  - docker build -t spark-nlp-scala -f .ci/Dockerfile .
 
 cache:
   directories:
     - $HOME/.spark_nlp.dep.cache
 
-matrix:
+jobs:
   include:
-    - language: python
-      python: 2.7
-      before_script:
-        - sbt assemblyAndCopy
-        - pip install pyspark
-        - pip install numpy
-        - cd python/
-      script:
-        - python run-tests.py
-
-    - language: python
-      python: 3.6
-      before_script:
-        - sbt assemblyAndCopy
-        - pip install pyspark
-        - pip install numpy
-        - cd python/
-      script:
-        - python run-tests.py
-
-    - language: scala
-      scala: 2.11.11
-      before_script:
-        - export _JAVA_OPTIONS="-Xmx4G -XX:+UseConcMarkSweepGC -Xss6M -Xms2048M"
-      script:
-        - docker run spark-nlp-scala sbt test
+    - stage: build
+    - script: docker build -t spark-nlp-scala -f .ci/Dockerfile .
+    - stage: scala
+    - script: docker run spark-nlp-scala sbt test 
+    - stage: python
+    - script: docker build -t spark-nlp-python-2 -f .ci/DockerfilePy2 .
+    - stage: docker run spark-nlp-python-2 python2 run-tests.py
+    - script: docker build -t spark-nlp-python-3 -f .ci/DockerfilePy3 .
+    - stage: docker run spark-nlp-python-3 python3 run-tests.py
